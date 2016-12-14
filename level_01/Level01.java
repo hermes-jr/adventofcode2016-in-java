@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * --- Day 1: No Time for a Taxicab ---
@@ -25,6 +27,14 @@ import java.util.Arrays;
  * R5, L5, R5, R3 leaves you 12 blocks away.
  * <p>
  * How many blocks away is Easter Bunny HQ?
+ * <p>
+ * --- Part Two ---
+ * <p>
+ * Then, you notice the instructions continue on the back of the Recruiting Document. Easter Bunny HQ is actually at the first location you visit twice.
+ * <p>
+ * For example, if your instructions are R8, R4, R4, R8, the first location you visit twice is 4 blocks away, due East.
+ * <p>
+ * How many blocks away is the first location you visit twice?
  */
 public class Level01 {
 	public static void main(String[] args) throws IOException {
@@ -36,6 +46,10 @@ public class Level01 {
 		Integer direction = 0;
 		Integer xpos = 0;
 		Integer ypos = 0;
+
+		boolean secondSolved = false;
+		Integer secondResult = null;
+		Set<Pair<Integer>> visited = new HashSet<>();
 
 		final String[] actions = content.split(",");
 		System.out.println(Arrays.toString(actions));
@@ -54,24 +68,77 @@ public class Level01 {
 					direction = 3;
 			}
 
+			Pair<Integer> step = null;
+
 			switch (direction) {
 				case 0:
-					ypos -= dist;
+					step = new Pair<>(0, -1);
 					break;
 				case 1:
-					xpos += dist;
+					step = new Pair<>(1, 0);
 					break;
 				case 2:
-					ypos += dist;
+					step = new Pair<>(0, 1);
 					break;
 				case 3:
-					xpos -= dist;
+					step = new Pair<>(-1, 0);
 					break;
+			}
+
+			for (int i = 0; i < dist; i++) {
+				xpos += step.x;
+				ypos += step.y;
+
+				if (!secondSolved) {
+					Pair<Integer> currentPosition = new Pair<>(xpos, ypos);
+					System.out.println("curpos: " + currentPosition);
+					if (visited.contains(currentPosition)) {
+						System.out.println("DUPE!");
+						secondResult = Math.abs(xpos) + Math.abs(ypos);
+						secondSolved = true;
+					}
+					visited.add(currentPosition);
+				}
 			}
 
 		}
 
 		Integer distance = Math.abs(xpos) + Math.abs(ypos);
-		System.out.printf("result: " + distance);
+		System.out.println("result: " + distance);
+		System.out.println("2nd result: " + secondResult);
+	}
+
+	static class Pair<T> {
+		T x;
+		T y;
+
+		Pair(T x, T y) {
+			this.x = x;
+			this.y = y;
+		}
+
+		@Override
+		public String toString() {
+			return "[x=" + x +
+					", y=" + y +
+					']';
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			Pair<?> pair = (Pair<?>) o;
+
+			return x.equals(pair.x) && y.equals(pair.y);
+		}
+
+		@Override
+		public int hashCode() {
+			int result = x.hashCode();
+			result = 31 * result + y.hashCode();
+			return result;
+		}
 	}
 }
