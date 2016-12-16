@@ -78,8 +78,6 @@ public class Level07 {
 			}
 		}
 
-		System.out.println("Part 1 result: " + counter);
-
 		Pattern sslPattern = Pattern.compile("^(.)((?!\\1).)\\1$");
 		int counter2 = 0;
 
@@ -129,6 +127,7 @@ public class Level07 {
 
 		}
 
+		System.out.println("Result 1: " + counter);
 		System.out.println("Result 2: " + counter2);
 	}
 
