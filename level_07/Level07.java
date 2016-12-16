@@ -88,6 +88,7 @@ public class Level07 {
 			String outside = line.replaceAll("\\[[^\\]]+\\]", "_-");
 			System.out.println(outside);
 
+			// Find all possible (with overlapping) combinations of ABA
 			Set<String> possibleSsls = new HashSet<>();
 			Matcher m = sslPattern.matcher(outside);
 
@@ -102,12 +103,13 @@ public class Level07 {
 				}
 			}
 
+			// There are no ABAs outside brackets. This address is invalid, skip.
 			if (possibleSsls.isEmpty())
 				continue;
 
 			System.out.println(possibleSsls);
 
-
+			// Convert all existing ABAs to BABs and attempt to find one of them inside brackets
 			List<String> mapped = possibleSsls.stream().map(Level07::invertSsl).collect(Collectors.toList());
 			System.out.println(mapped);
 
@@ -120,7 +122,7 @@ public class Level07 {
 				for (String invertedSsl : mapped) {
 					if (inBracketsGroup.contains(invertedSsl)) {
 						counter2++;
-						continue lineLoop; // This line doesn't fit
+						continue lineLoop; // This line fits
 					}
 				}
 			}
@@ -130,6 +132,9 @@ public class Level07 {
 		System.out.println("Result 2: " + counter2);
 	}
 
+	/**
+	 * convert ABA to BAB
+	 */
 	private static String invertSsl(String string) {
 		StringBuilder ret = new StringBuilder();
 		char[] ltrs = string.toCharArray();
