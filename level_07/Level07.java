@@ -3,9 +3,12 @@ package level_07;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * --- Day 7: Internet Protocol Version 7 ---
@@ -22,6 +25,22 @@ import java.util.regex.Pattern;
  * ioxxoj[asdfgh]zxcvbn supports TLS (oxxo is outside square brackets, even though it's within a larger string).
  * <p>
  * How many IPs in your puzzle input support TLS?
+ * <p>
+ * <p>
+ * --- Part Two ---
+ * <p>
+ * You would also like to know which IPs support SSL (super-secret listening).
+ * <p>
+ * An IP supports SSL if it has an Area-Broadcast Accessor, or ABA, anywhere in the supernet sequences (outside any square bracketed sections), and a corresponding Byte Allocation Block, or BAB, anywhere in the hypernet sequences. An ABA is any three-character sequence which consists of the same character twice with a different character between them, such as xyx or aba. A corresponding BAB is the same characters but in reversed positions: yxy and bab, respectively.
+ * <p>
+ * For example:
+ * <p>
+ * aba[bab]xyz supports SSL (aba outside square brackets with corresponding bab within square brackets).
+ * xyx[xyx]xyx does not support SSL (xyx, but no corresponding yxy).
+ * aaa[kek]eke supports SSL (eke in supernet with corresponding kek in hypernet; the aaa sequence is not related, because the interior character must be different).
+ * zazbz[bzb]cdb supports SSL (zaz has no corresponding aza, but zbz has a corresponding bzb, even though zaz and zbz overlap).
+ * <p>
+ * How many IPs in your puzzle input support SSL?
  */
 public class Level07 {
 
@@ -37,7 +56,7 @@ public class Level07 {
 		for (String line : content) {
 			System.out.println("Processing: " + line);
 
-			String outside = line.replaceAll("\\[[^\\]]+\\]", "-");
+			String outside = line.replaceAll("\\[[^\\]]+\\]", "_-");
 			System.out.println(outside);
 
 			if (abbas.matcher(outside).matches()) {
@@ -59,7 +78,65 @@ public class Level07 {
 			}
 		}
 
-		System.out.println("Result: " + counter);
+		System.out.println("Part 1 result: " + counter);
 
+		Pattern sslPattern = Pattern.compile("^(.)((?!\\1).)\\1$");
+		int counter2 = 0;
+
+		lineLoop:
+		for (String line : content) {
+			String outside = line.replaceAll("\\[[^\\]]+\\]", "_-");
+			System.out.println(outside);
+
+			Set<String> possibleSsls = new HashSet<>();
+			Matcher m = sslPattern.matcher(outside);
+
+			int end = outside.length();
+			for (int i = 0; i < end; ++i) {
+				for (int j = i + 1; j <= end; ++j) {
+					m.region(i, j);
+
+					if (m.find()) {
+						possibleSsls.add(m.group());
+					}
+				}
+			}
+
+			if (possibleSsls.isEmpty())
+				continue;
+
+			System.out.println(possibleSsls);
+
+
+			List<String> mapped = possibleSsls.stream().map(Level07::invertSsl).collect(Collectors.toList());
+			System.out.println(mapped);
+
+			Matcher inBracketsMatcher = inBrackets.matcher(line);
+			while (inBracketsMatcher.find()) {
+
+				String inBracketsGroup = inBracketsMatcher.group(1);
+				System.out.println(inBracketsGroup);
+
+				for (String invertedSsl : mapped) {
+					if (inBracketsGroup.contains(invertedSsl)) {
+						counter2++;
+						continue lineLoop; // This line doesn't fit
+					}
+				}
+			}
+
+		}
+
+		System.out.println("Result 2: " + counter2);
 	}
+
+	private static String invertSsl(String string) {
+		StringBuilder ret = new StringBuilder();
+		char[] ltrs = string.toCharArray();
+		ret.append(ltrs[1]);
+		ret.append(ltrs[0]);
+		ret.append(ltrs[1]);
+		return ret.toString();
+	}
+
 }
