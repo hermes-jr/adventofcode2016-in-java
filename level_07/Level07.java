@@ -47,7 +47,7 @@ public class Level07 {
 	public static void main(String[] args) throws IOException {
 		List<String> content = Files.readAllLines(Paths.get("level_07/in1.txt"));
 
-		Pattern abbas = Pattern.compile("^.*(.)((?!\\1).)\\2\\1.*$");
+		Pattern abbas = Pattern.compile("(.)((?!\\1).)\\2\\1");
 		Pattern inBrackets = Pattern.compile("\\[(.*?)\\]");
 
 		int counter = 0;
@@ -59,7 +59,7 @@ public class Level07 {
 			String outside = line.replaceAll("\\[[^\\]]+\\]", "_-");
 			System.out.println(outside);
 
-			if (abbas.matcher(outside).matches()) {
+			if (abbas.matcher(outside).find()) {
 				// Possible TLS, need to check inside brackets
 
 				Matcher inBracketsMatcher = inBrackets.matcher(line);
@@ -68,7 +68,7 @@ public class Level07 {
 					String inBracketsGroup = inBracketsMatcher.group(1);
 					System.out.println(inBracketsGroup);
 
-					if (abbas.matcher(inBracketsGroup).matches()) {
+					if (abbas.matcher(inBracketsGroup).find()) {
 						continue lineLoop; // This line doesn't fit
 					}
 				}
