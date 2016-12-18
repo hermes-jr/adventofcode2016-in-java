@@ -63,7 +63,7 @@ import java.util.regex.Pattern;
  */
 public class Level14 {
 	private static final String salt = "qzyelonm";
-	//private static final String salt = "abc";
+	//private static final String salt = "abc"; // test case
 	private static MessageDigest m;
 	private static final Pattern triplet = Pattern.compile("(.)\\1\\1");
 
@@ -74,7 +74,7 @@ public class Level14 {
 		int result2 = calculate(2016); // part2
 
 		System.out.println("result1: " + result1); // test case: 22728 (correct), my case: 15168 (correct)
-		System.out.println("result2: " + result2); // test case: 22551 (correct), my case: 20316 (INCORRECT?! too low)
+		System.out.println("result2: " + result2); // test case: 22551 (correct), my case: 20864 (correct)
 	}
 
 	private static int calculate(int rotations) {
@@ -130,6 +130,11 @@ public class Level14 {
 		return counter;
 	}
 
+	/**
+	 * @param plaintext plaintext to hash (abc1234)
+	 * @param rotations rotations to use for key stretching, 0 for part 1, 2016 for part 2
+	 * @return hex'd hash as string
+	 */
 	private static String hashIt(String plaintext, int rotations) {
 		String result;
 		m.reset();
