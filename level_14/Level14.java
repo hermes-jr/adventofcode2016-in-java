@@ -62,22 +62,22 @@ import java.util.regex.Pattern;
  * Given the actual salt in your puzzle input and using 2016 extra MD5 calls of key stretching, what index now produces your 64th one-time pad key?
  */
 public class Level14 {
-	//private static final String salt = "qzyelonm";
-	private static final String salt = "abc";
+	private static final String salt = "qzyelonm";
+	//private static final String salt = "abc";
 	private static MessageDigest m;
 	private static final Pattern triplet = Pattern.compile("(.)\\1\\1");
 
 	public static void main(String[] args) throws NoSuchAlgorithmException {
 		m = MessageDigest.getInstance("MD5");
 
-		int result1 = calculate(false); // part1
-		int result2 = calculate(true); // part2
+		int result1 = calculate(0); // part1
+		int result2 = calculate(2016); // part2
 
 		System.out.println("result1: " + result1); // test case: 22728 (correct), my case: 15168 (correct)
 		System.out.println("result2: " + result2); // test case: 22551 (correct), my case: 20316 (INCORRECT?! too low)
 	}
 
-	private static int calculate(boolean part2) {
+	private static int calculate(int rotations) {
 		HashMap<Integer, String> knownHashes = new HashMap<>();
 		int counter = 0;
 		int foundHashes = 0;
@@ -88,29 +88,14 @@ public class Level14 {
 			if (knownHashes.containsKey(counter)) {
 				strDigest = knownHashes.get(counter);
 			} else {
-				String nextTry = salt + counter;
-
-				m.reset();
-				m.update(nextTry.getBytes(Charset.forName("UTF-8")));
-
-				byte[] digest = m.digest();
-				strDigest = md5BtoS(digest);
-
-				if (part2) {
-					for (int stretch = 0; stretch < 2016; stretch++) {
-						m.reset();
-						m.update(strDigest.getBytes(Charset.forName("UTF-8")));
-						digest = m.digest();
-						strDigest = md5BtoS(digest);
-					}
-				}
-
+				strDigest = hashIt(salt + counter, rotations);
 				knownHashes.put(counter, strDigest);
 			}
 
 			Matcher tripletMatcher = triplet.matcher(strDigest);
-			if (tripletMatcher.find()) {
-				String strTriplet = tripletMatcher.group();
+			if (tripletMatcher.find(0)) {
+				String strTriplet = tripletMatcher.group(0);
+				tripletMatcher.reset();
 				//System.out.println(strTriplet + " found in in " + strDigest);
 
 				// Try to find quintet in following 1000 hashes
@@ -119,21 +104,7 @@ public class Level14 {
 					if (knownHashes.containsKey(i)) {
 						nextStrDigest = knownHashes.get(i);
 					} else {
-						m.reset();
-						String thousandTry = salt + i;
-						m.update(thousandTry.getBytes(Charset.forName("UTF-8")));
-
-						byte[] nextDigest = m.digest();
-
-						nextStrDigest = md5BtoS(nextDigest);
-						if (part2) {
-							for (int stretch = 0; stretch < 2016; stretch++) {
-								m.reset();
-								m.update(nextStrDigest.getBytes(Charset.forName("UTF-8")));
-								nextDigest = m.digest();
-								nextStrDigest = md5BtoS(nextDigest);
-							}
-						}
+						nextStrDigest = hashIt(salt + i, rotations);
 						knownHashes.put(i, nextStrDigest);
 					}
 
@@ -154,6 +125,25 @@ public class Level14 {
 			counter++;
 		}
 		return counter;
+	}
+
+	private static String hashIt(String plaintext, int rotations) {
+		String result;
+		m.reset();
+		m.update(plaintext.getBytes(Charset.forName("UTF-8")));
+
+		byte[] digest = m.digest();
+
+		result = md5BtoS(digest);
+
+		for (int stretch = 0; stretch < rotations; stretch++) {
+			m.reset();
+			m.update(result.getBytes(Charset.forName("UTF-8")));
+			digest = m.digest();
+			result = md5BtoS(digest);
+		}
+
+		return result;
 	}
 
 	/**
