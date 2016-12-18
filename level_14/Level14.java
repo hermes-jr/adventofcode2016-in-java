@@ -62,8 +62,8 @@ import java.util.regex.Pattern;
  * Given the actual salt in your puzzle input and using 2016 extra MD5 calls of key stretching, what index now produces your 64th one-time pad key?
  */
 public class Level14 {
-	//private static final String salt = "qzyelonm";
-	private static final String salt = "abc";
+	private static final String salt = "qzyelonm";
+	//private static final String salt = "abc";
 	private static MessageDigest m;
 	private static final Pattern triplet = Pattern.compile("(.)\\1\\1");
 
@@ -114,7 +114,7 @@ public class Level14 {
 				//System.out.println(strTriplet + " found in in " + strDigest);
 
 				// Try to find quintet in following 1000 hashes
-				for (int i = counter + 1; i <= counter + 1000; i++) {
+				for (int i = counter + 1; i <= counter + 1001; i++) {
 					String nextStrDigest;
 					if (knownHashes.containsKey(i)) {
 						nextStrDigest = knownHashes.get(i);
