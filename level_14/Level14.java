@@ -118,6 +118,9 @@ public class Level14 {
 
 						if (foundHashes == 64)
 							break outerLoop;
+
+						counter++;
+						continue outerLoop;
 					}
 				}
 			}
