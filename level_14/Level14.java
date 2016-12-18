@@ -62,8 +62,8 @@ import java.util.regex.Pattern;
  * Given the actual salt in your puzzle input and using 2016 extra MD5 calls of key stretching, what index now produces your 64th one-time pad key?
  */
 public class Level14 {
-	private static final String salt = "qzyelonm";
-	//private static final String salt = "abc";
+	//private static final String salt = "qzyelonm";
+	private static final String salt = "abc";
 	private static MessageDigest m;
 	private static final Pattern triplet = Pattern.compile("(.)\\1\\1");
 
@@ -161,9 +161,14 @@ public class Level14 {
 	 */
 	private static String md5BtoS(byte[] digest) {
 		StringBuilder sb = new StringBuilder();
+
 		for (byte aDigest : digest) {
-			sb.append(String.format("%02x", aDigest));
+			if ((0xff & aDigest) < 0x10) {
+				sb.append('0');
+			}
+			sb.append(Integer.toHexString(0xff & aDigest));
 		}
+
 		return sb.toString();
 	}
 }
