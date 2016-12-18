@@ -73,8 +73,8 @@ public class Level14 {
 		int result1 = calculate(false); // part1
 		int result2 = calculate(true); // part2
 
-		System.out.println("result1: " + result1);
-		System.out.println("result2: " + result2); // 20316 too low ?!
+		System.out.println("result1: " + result1); // test case: 22728 (correct), my case: 15168 (correct)
+		System.out.println("result2: " + result2); // test case: 22551 (correct), my case: 20316 (INCORRECT?! too low)
 	}
 
 	private static int calculate(boolean part2) {
@@ -162,10 +162,7 @@ public class Level14 {
 	private static String md5BtoS(byte[] digest) {
 		StringBuilder sb = new StringBuilder();
 		for (byte aDigest : digest) {
-			if ((0xff & aDigest) < 0x10) {
-				sb.append('0');
-			}
-			sb.append(Integer.toHexString(0xff & aDigest));
+			sb.append(String.format("%02x", aDigest));
 		}
 		return sb.toString();
 	}
