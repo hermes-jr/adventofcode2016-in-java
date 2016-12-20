@@ -1,9 +1,6 @@
 package level_13;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.*;
 
 /**
  * --- Day 13: A Maze of Twisty Little Cubicles ---
@@ -47,11 +44,16 @@ import java.util.Queue;
  * What is the fewest number of steps required for you to reach 31,39?
  * <p>
  * Your puzzle input is 1350.
+ * <p>
+ * <p>
+ * --- Part Two ---
+ * <p>
+ * How many locations (distinct x,y coordinates, including your starting location) can you reach in at most 50 steps?
  */
 public class Level13 {
 
 	// personal input
-	private static final int MAX_X = 50;
+	private static final int MAX_X = 60;
 	private static final int MAX_Y = 60;
 	private static final int SEED = 1350;
 	private static final int TARGET_X = 31;
@@ -146,6 +148,12 @@ public class Level13 {
 		}
 
 		System.out.println("Result 1: " + paths.get(targetNodeNumber));
+		int result2 = 0;
+		for (Map.Entry<Integer, Long> knownPath : paths.entrySet()) {
+			if (knownPath.getValue() != null && knownPath.getValue().compareTo(50L) <= 0)
+				result2++;
+		}
+		System.out.println("Result 2: " + result2);
 
 	}
 
