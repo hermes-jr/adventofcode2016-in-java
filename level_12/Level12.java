@@ -40,24 +40,40 @@ import java.util.regex.Pattern;
  * The above code would set register a to 41, increase its value by 2, decrease its value by 1, and then skip the last dec a (because a is not zero, so the jnz a 2 skips it), leaving register a at 42. When you move past the last instruction, the program halts.
  * <p>
  * After executing the assembunny code in your puzzle input, what value is left in register a?
+ * <p>
+ * <p>
+ * --- Part Two ---
+ * <p>
+ * As you head down the fire escape to the monorail, you notice it didn't start; register c needs to be initialized to the position of the ignition key.
+ * <p>
+ * If you instead initialize register c to be 1, what value is now left in register a?
  */
 public class Level12 {
+	private static List<String> program;
+	private static Pattern cpyPattern = Pattern.compile("^cpy ([a-d]|-?[0-9]+) ([a-d])$");
+	private static Pattern jnzPattern = Pattern.compile("^jnz ([a-d]|-?[0-9]+) (-?[0-9]+)$");
 
 	public static void main(String[] args) throws IOException {
-		final List<String> program = Files.readAllLines(Paths.get("level_12/in1.txt"));
-		Pattern cpyPattern = Pattern.compile("^cpy ([a-d]|-?[0-9]+) ([a-d])$");
-		Pattern jnzPattern = Pattern.compile("^jnz ([a-d]|-?[0-9]+) (-?[0-9]+)$");
+		program = Files.readAllLines(Paths.get("level_12/in1.txt"));
 
+		int result1 = calc(0);
+		int result2 = calc(1);
+
+		System.out.println("result 1: " + result1);
+		System.out.println("result 2: " + result2);
+	}
+
+	private static int calc(int level) {
 		HashMap<Character, Integer> registers = new HashMap<>();
 		registers.put('a', 0);
 		registers.put('b', 0);
-		registers.put('c', 0);
+		registers.put('c', level);
 		registers.put('d', 0);
 
 		int ip = 0;
-		while (ip != program.size()) {
+		while (ip < program.size()) {
 			final String instruction = program.get(ip);
-			System.out.println("Processing: " + instruction);
+			//System.out.println("Processing: " + instruction);
 
 			Matcher cpyMatcher = cpyPattern.matcher(instruction);
 			Matcher jnzMatcher = jnzPattern.matcher(instruction);
@@ -79,7 +95,7 @@ public class Level12 {
 					lop = registers.get(cpyMatcher.group(1).charAt(0));
 				}
 				registers.put(destReg, lop);
-				System.out.println("line: " + ip + ", lop: " + lop + ", rop: " + destReg);
+				//System.out.println("line: " + ip + ", lop: " + lop + ", rop: " + destReg);
 			} else if (jnzMatcher.matches()) {
 				// JNZ
 				Integer lop;
@@ -89,13 +105,11 @@ public class Level12 {
 					lop = registers.get(jnzMatcher.group(1).charAt(0));
 				}
 				Integer rop = Integer.parseInt(jnzMatcher.group(2));
-				System.out.println("line: " + ip + ", lop: " + lop + ", rop: " + rop);
+				//System.out.println("line: " + ip + ", lop: " + lop + ", rop: " + rop);
 
 				if (!lop.equals(0)) {
-					if (rop > 0)
-						ip--;
 					ip += rop;
-					System.out.println("jumping to " + ip);
+					//System.out.println("jumping to " + ip);
 					continue;
 				}
 			} else {
@@ -103,9 +117,11 @@ public class Level12 {
 			}
 			ip++;
 		}
+
 		System.out.println("Done!");
 		System.out.println(registers);
-		//317823 too low
+		return registers.get('a');
 	}
+
 
 }
