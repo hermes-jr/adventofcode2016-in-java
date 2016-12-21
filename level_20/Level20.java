@@ -3,7 +3,6 @@ package level_20;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -58,29 +57,18 @@ public class Level20 {
 		System.out.println(st.inSync());
 		System.out.println(st.currentSize());
 
-		List<Interval<Integer>> testme = st.getIntervals(0L, 4294967295L);
-		Collections.sort(testme);
-		System.out.println(testme);
-
-		long result2 = testme.get(0).getStart();
+		// brute force
 		long firstFree = -1L;
-		for (int i = 0; i < testme.size() - 2; i++) {
-			Long curEnd = testme.get(i).getEnd();
-			Long nextStart = testme.get(i + 1).getStart();
-			if (nextStart - curEnd > 0) {
-				if (firstFree == -1L && st.get(curEnd + 1L).size() == 0) {
-					firstFree = curEnd + 1L;
+		long result2 = 0L;
+		for (long i = 0L; i <= 4294967295L; i++) {
+			if (st.get(i, i).size() == 0) {
+				if (firstFree == -1L) {
+					firstFree = i;
+					System.out.println("result 1: " + firstFree);
 				}
-				// Pretty dumb solution, but fast enough:
-				for (long si = curEnd; si < nextStart; si++) {
-					if (st.get(si).size() == 0) {
-						result2++;
-					}
-				}
+				result2++;
 			}
 		}
-		result2 += 4294967295L - testme.get(testme.size() - 1).getEnd();
-		System.out.println("result 1: " + firstFree);
 		System.out.println("result 2: " + result2);
 	}
 
