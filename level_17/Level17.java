@@ -47,7 +47,10 @@ import java.util.List;
  */
 public class Level17 {
 	private static MessageDigest m;
-	//private static final String salt = "ihgpwlah"; // test case
+	//private static final String salt = "ihgpwlah"; // test case, expecting DDRRRD
+	//private static final String salt = "kglvqrro"; // test case, expecting DDUDRLRRUDRD
+	//private static final String salt = "ulqzkmiv"; // test case, expecting DRURDRUDDLLDLUURRDULRLDUUDDDRR
+
 	private static final String salt = "pvhmgsws";
 	private static String knownShortestPath = null;
 
@@ -65,7 +68,7 @@ public class Level17 {
 	private static void processStep(int x, int y, String newPath) {
 		if (x == 3 && y == 3) {
 			System.out.println("VAULT FOUND (" + newPath.length() + "): " + newPath);
-			if (knownShortestPath == null || knownShortestPath.length() < newPath.length()) {
+			if (knownShortestPath == null || knownShortestPath.length() >= newPath.length()) {
 				knownShortestPath = newPath;
 			}
 			return;
