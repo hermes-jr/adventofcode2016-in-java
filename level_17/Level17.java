@@ -44,6 +44,19 @@ import java.util.List;
  * Given your vault's passcode, what is the shortest path (the actual path, not just the length) to reach the vault?
  * <p>
  * Your puzzle input is pvhmgsws.
+ * <p>
+ * <p>
+ * --- Part Two ---
+ * <p>
+ * You're curious how robust this security solution really is, and so you decide to find longer and longer paths which still provide access to the vault. You remember that paths always end the first time they reach the bottom-right room (that is, they can never pass through it, only end in it).
+ * <p>
+ * For example:
+ * <p>
+ * If your passcode were ihgpwlah, the longest path would take 370 steps.
+ * With kglvqrro, the longest path would be 492 steps long.
+ * With ulqzkmiv, the longest path would be 830 steps long.
+ * <p>
+ * What is the length of the longest path that reaches the vault?
  */
 public class Level17 {
 	private static MessageDigest m;
