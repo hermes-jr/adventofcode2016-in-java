@@ -47,12 +47,13 @@ import java.util.List;
  */
 public class Level17 {
 	private static MessageDigest m;
-	//private static final String salt = "ihgpwlah"; // test case, expecting DDRRRD
-	//private static final String salt = "kglvqrro"; // test case, expecting DDUDRLRRUDRD
-	//private static final String salt = "ulqzkmiv"; // test case, expecting DRURDRUDDLLDLUURRDULRLDUUDDDRR
+	//private static final String salt = "ihgpwlah"; // test case, expecting min DDRRRD, max 370 steps
+	//private static final String salt = "kglvqrro"; // test case, expecting min DDUDRLRRUDRD, max 492
+	//private static final String salt = "ulqzkmiv"; // test case, expecting min DRURDRUDDLLDLUURRDULRLDUUDDDRR, max 830
 
-	private static final String salt = "pvhmgsws";
+	private static final String salt = "pvhmgsws"; // puzzle input
 	private static String knownShortestPath = null;
+	private static Integer knownLongestPathLength = null;
 
 	public static void main(String[] args) throws NoSuchAlgorithmException {
 		m = MessageDigest.getInstance("MD5");
@@ -62,7 +63,8 @@ public class Level17 {
 
 		processStep(curX, curY, "");
 
-		System.out.println(knownShortestPath);
+		System.out.println("result 1: " + knownShortestPath);
+		System.out.println("result 2: " + knownLongestPathLength);
 	}
 
 	private static void processStep(int x, int y, String newPath) {
@@ -71,11 +73,9 @@ public class Level17 {
 			if (knownShortestPath == null || knownShortestPath.length() >= newPath.length()) {
 				knownShortestPath = newPath;
 			}
-			return;
-		}
-
-		if (knownShortestPath != null && newPath.length() > knownShortestPath.length()) {
-			System.out.println(newPath + " is longer then known shortest path, no reason to proceed");
+			if (knownLongestPathLength == null || knownLongestPathLength <= newPath.length()) {
+				knownLongestPathLength = newPath.length();
+			}
 			return;
 		}
 
