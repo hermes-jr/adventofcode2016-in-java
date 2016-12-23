@@ -63,14 +63,17 @@ public class Level23 {
 		program = Files.readAllLines(Paths.get("level_23/in1.txt"));
 		//program = Files.readAllLines(Paths.get("level_23/testin.txt"));
 
-		int result1 = calc();
-
+		int result1 = calc(7);
 		System.out.println("result 1: " + result1);
+
+		program = Files.readAllLines(Paths.get("level_23/in1.txt")); // reset program, as the previous run modified it
+		int result2 = calc(12);
+		System.out.println("result 2: " + result2);
 	}
 
-	private static int calc() {
+	private static int calc(int level) {
 		HashMap<Character, Integer> registers = new HashMap<>();
-		registers.put('a', 7);
+		registers.put('a', level);
 		registers.put('b', 0);
 		registers.put('c', 0);
 		registers.put('d', 0);
@@ -82,61 +85,81 @@ public class Level23 {
 
 			Matcher cpyMatcher = cpyPattern.matcher(instruction);
 			Matcher jnzMatcher = jnzPattern.matcher(instruction);
-			if (instruction.startsWith("tgl")) {
-				// TGL
-				Integer offset = intOrRegister(instruction.substring(4), registers);
-				if (ip + offset < program.size() && ip + offset >= 0) {
-					String afterToggle;
-					String beforeToggle = program.get(ip + offset);
-					if (beforeToggle.indexOf(' ') == beforeToggle.lastIndexOf(' ')) {
-						// one argument
-						if (beforeToggle.startsWith("inc")) {
-							afterToggle = "dec" + beforeToggle.substring(3);
-						} else {
-							afterToggle = "inc" + beforeToggle.substring(3);
-						}
-					} else {
-						// two argument
-						if (beforeToggle.startsWith("jnz")) {
-							afterToggle = "cpy" + beforeToggle.substring(3);
-						} else {
-							afterToggle = "jnz" + beforeToggle.substring(3);
-						}
-					}
-
-					program.set(ip + offset, afterToggle);
-					ip++;
-					continue;
-				}
-			} else if (instruction.startsWith("inc")) {
-				// INC
-				char reg = instruction.charAt(4);
-				registers.put(reg, registers.get(reg) + 1);
-			} else if (instruction.startsWith("dec")) {
-				// DEC
-				char reg = instruction.charAt(4);
-				registers.put(reg, registers.get(reg) - 1);
-			} else if (cpyMatcher.matches()) {
-				// CPY
-				char destReg = cpyMatcher.group(2).charAt(0);
-				Integer lop = intOrRegister(cpyMatcher.group(1), registers);
-				registers.put(destReg, lop);
-				//System.out.println("line: " + ip + ", lop: " + lop + ", rop: " + destReg);
-			} else if (jnzMatcher.matches()) {
-				// JNZ
-				Integer lop = intOrRegister(jnzMatcher.group(1), registers);
-				Integer rop = intOrRegister(jnzMatcher.group(2), registers);
-				//System.out.println("line: " + ip + ", lop: " + lop + ", rop: " + rop);
-
-				if (!lop.equals(0)) {
-					ip += rop;
-					//System.out.println("jumping to " + ip);
-					continue;
-				}
+			/*
+			WARNING! fits only for in1.txt puzzle input, which contains a nested loop:
+			4: cpy b c
+			5: inc a
+			6: dec c
+			7: jnz c -2
+			8: dec d
+			9: jnz d -5
+			...
+			which means register A will be increased by 1 B*D times, so we will simply
+			skip instruction number 4 putting correct values into registers
+			 */
+			if (level == 12 && ip == 4) {
+				int newA = registers.get('d') * registers.get('b');
+				registers.put('d', 0);
+				registers.put('c', 0);
+				registers.put('a', newA);
+				ip = 10;
 			} else {
-				throw new RuntimeException(String.format("Unknown instruction at line %d: \"%s\"", ip, instruction));
+				if (instruction.startsWith("tgl")) {
+					// TGL
+					Integer offset = intOrRegister(instruction.substring(4), registers);
+					if (ip + offset < program.size() && ip + offset >= 0) {
+						String afterToggle;
+						String beforeToggle = program.get(ip + offset);
+						if (beforeToggle.indexOf(' ') == beforeToggle.lastIndexOf(' ')) {
+							// one argument
+							if (beforeToggle.startsWith("inc")) {
+								afterToggle = "dec" + beforeToggle.substring(3);
+							} else {
+								afterToggle = "inc" + beforeToggle.substring(3);
+							}
+						} else {
+							// two argument
+							if (beforeToggle.startsWith("jnz")) {
+								afterToggle = "cpy" + beforeToggle.substring(3);
+							} else {
+								afterToggle = "jnz" + beforeToggle.substring(3);
+							}
+						}
+
+						program.set(ip + offset, afterToggle);
+						ip++;
+						continue;
+					}
+				} else if (instruction.startsWith("inc")) {
+					// INC
+					char reg = instruction.charAt(4);
+					registers.put(reg, registers.get(reg) + 1);
+				} else if (instruction.startsWith("dec")) {
+					// DEC
+					char reg = instruction.charAt(4);
+					registers.put(reg, registers.get(reg) - 1);
+				} else if (cpyMatcher.matches()) {
+					// CPY
+					char destReg = cpyMatcher.group(2).charAt(0);
+					Integer lop = intOrRegister(cpyMatcher.group(1), registers);
+					registers.put(destReg, lop);
+					//System.out.println("line: " + ip + ", lop: " + lop + ", rop: " + destReg);
+				} else if (jnzMatcher.matches()) {
+					// JNZ
+					Integer lop = intOrRegister(jnzMatcher.group(1), registers);
+					Integer rop = intOrRegister(jnzMatcher.group(2), registers);
+					//System.out.println("line: " + ip + ", lop: " + lop + ", rop: " + rop);
+
+					if (!lop.equals(0)) {
+						ip += rop;
+						//System.out.println("jumping to " + ip);
+						continue;
+					}
+				} else {
+					throw new RuntimeException(String.format("Unknown instruction at line %d: \"%s\"", ip, instruction));
+				}
+				ip++;
 			}
-			ip++;
 		}
 
 		System.out.println("Done!");
