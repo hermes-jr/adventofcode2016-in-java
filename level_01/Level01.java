@@ -108,7 +108,7 @@ public class Level01 {
 		System.out.println("2nd result: " + secondResult);
 	}
 
-	static class Pair<T> {
+	private static class Pair<T> {
 		T x;
 		T y;
 
