@@ -34,12 +34,24 @@ import java.util.*;
  * Since the robot isn't very fast, you need to find it the shortest route. This path is the fewest steps (in the above example, a total of 14) required to start at 0 and then visit every other location at least once.
  * <p>
  * Given your actual map, and starting from location 0, what is the fewest number of steps required to visit every non-0 number marked on the map at least once?
+ * <p>
+ * <p>
+ * --- Part Two ---
+ * <p>
+ * Of course, if you leave the cleaning robot somewhere weird, someone is bound to notice.
+ * <p>
+ * What is the fewest number of steps required to start at 0, visit every non-0 number marked on the map at least once, and then return to 0?
  */
 public class Level24 {
 
-	// First attempt is to simply solve this puzzle using straightforward approach, it's terribly inefficient, but at least it works :)
-	// running it with -Xmx5G
 	public static void main(String[] args) throws IOException {
+		long result1 = solveLevel(1);
+		long result2 = solveLevel(2);
+		System.out.println("result1: " + result1);
+		System.out.println("result2: " + result2);
+	}
+
+	private static Long solveLevel(int levelNum) throws IOException {
 		List<String> input = Files.readAllLines(Paths.get("level_24/in1.txt"));
 		//List<String> input = Files.readAllLines(Paths.get("level_24/testin.txt")); // test case
 
@@ -102,12 +114,14 @@ public class Level24 {
 		List<List<Integer>> bypassPossibilities = getPermutations(new ArrayList<>(specialNodes.values()).subList(1, specialNodes.keySet().size()));
 		for (List<Integer> possibleBypass : bypassPossibilities) {
 			possibleBypass.add(0, specialNodes.get(0));
+			if (levelNum == 2) {
+				possibleBypass.add(specialNodes.get(0));
+			}
 		}
 		System.out.println(bypassPossibilities);
 
-		// STEP4. find the shortest of them all. freaking memory intensive using bfs for large maze, probably i'm doing it wrong :)
+		// STEP4. find the shortest of them all.
 		// gonna use some caching to speedup
-
 		Map<Pair<Integer>, Long> pathsCache = new HashMap<>();
 		Long shortestPath = null;
 		bypassCycle:
@@ -129,22 +143,15 @@ public class Level24 {
 					+ "\nwith total length of: " + pathLen);
 		}
 
-		System.out.println("result1: " + shortestPath);
+		return shortestPath;
 	}
 
 	private static Long getPathLengthFromTo(Integer startNodeId, Integer endNodeId, Integer[][] graph) {
-		Long result = 0L;
+		Long result;
 
 		System.out.println("searching path from node " + startNodeId + " to node " + endNodeId);
 		HashMap<Integer, Long> paths = new HashMap<>();
 
-/*
-		for (int p_i = 0; p_i < graph.length * graph[0].length; p_i++) {
-			Long w = null;
-			if (p_i == startNodeId) w = 0L;
-			paths.put(p_i, w);
-		}
-*/
 		paths.put(startNodeId, 0L);
 
 		ArrayList<Integer> visited = new ArrayList<>();
