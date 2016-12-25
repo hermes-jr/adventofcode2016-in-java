@@ -31,6 +31,16 @@ public class Level19 {
 
 	public static void main(String[] args) {
 
+		//int target = 5; // test case
+		int target = 3005290;
+		int maxpow = 1;
+		for(int i = 1; i < target; i*=2) {
+			if(i < target) {
+				maxpow = i;
+			}
+		}
+		int result1 = (target - maxpow) * 2 + 1;
+		System.out.println("result1: " + result1);
 
 	}
 
