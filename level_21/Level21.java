@@ -39,12 +39,12 @@ import java.util.regex.Pattern;
 public class Level21 {
 
 	public static void main(String[] args) throws IOException, InterruptedException {
+/*
 		List<String> commands = Files.readAllLines(Paths.get("level_21/in1.txt"));
 		String password = "abcdefgh";
-/*
+*/
 		List<String> commands = Files.readAllLines(Paths.get("level_21/testin.txt")); // test case
 		String password = "abcde";
-*/
 
 		final Pattern swapLtrPattern = Pattern.compile("^swap letter (.) with letter (.)$");
 		final Pattern swapPosPattern = Pattern.compile("^swap position ([0-9]+) with position ([0-9]+)$");
