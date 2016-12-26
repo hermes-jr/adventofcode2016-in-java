@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
 public class Level22 {
 	public static void main(String[] args) throws IOException {
 		List<String> content = Files.readAllLines(Paths.get("level_22/in1.txt"));
-		Pattern dfPattern = Pattern.compile("^\\/dev\\/grid\\/node-x([0-9]+)-y([0-9]+)\\W+([0-9]+)T\\W+([0-9]+)T\\W+([0-9]+)T\\W+[0-9]+%$"); // x: 1, y: 2, total: 3, used: 4, free: 5, percent: 6
+		Pattern dfPattern = Pattern.compile("^/dev/grid/node-x([0-9]+)-y([0-9]+)\\W+([0-9]+)T\\W+([0-9]+)T\\W+([0-9]+)T\\W+[0-9]+%$"); // x: 1, y: 2, total: 3, used: 4, free: 5, percent: 6
 
 		Node data[][] = new Node[30][32];
 		List<Node> forPart1 = new ArrayList<>();
